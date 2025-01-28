@@ -13,3 +13,6 @@ blas: blas.c
 
 clean:
 	rm blas && rm stream
+
+plot_blas:
+	.venv/bin/python plot_blas.py
