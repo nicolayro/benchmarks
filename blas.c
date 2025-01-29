@@ -9,6 +9,8 @@
 
 #define GIGA 1.0e-9
 
+#define ITERATIONS
+
 #define WALLTIME(t) ((double)(t).tv_sec + 1e-6 * (double)(t).tv_usec)
 
 typedef int64_t int_t;
@@ -59,11 +61,11 @@ int main(int argc, char **argv)
     struct timeval start, end;
     double elapsed;
     double gflop_tot = 0;
-    for (int_t i = 0; i < 100; i++) {
+    for (int_t i = 0; i < ITERATIONS; i++) {
         gettimeofday(&start, NULL);
 
         cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans,
-                N, N, N, 
+                N, N, N,
                 ALPHA, A, N, B, N,
                 BETA, C, N);
 
@@ -75,7 +77,7 @@ int main(int argc, char **argv)
         gflop_tot += gflop/elapsed;
     }
 
-    printf("Avg Gflop/s: %lf\n", gflop_tot/100);
+    printf("Avg Gflop/s: %lf\n", gflop_tot/ITERATIONS);
 
     return 0;
 }

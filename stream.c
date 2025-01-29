@@ -1,3 +1,4 @@
+#include <complex.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -13,61 +14,90 @@ void add();
 void triad();
 
 #define GIGA 1e-9
+#define ITERATIONS 100
 
 int_t N;
 double *a, *b, *c;
-int scalar;
+double scalar;
 
-int main()
+void usage()
 {
-    N = 1e+6;
-    scalar = 2;
+    printf("USAGE: stream <N>\n");
+}
+
+int main(int argc, char **argv)
+{
+    if (argc < 2) {
+        fprintf(stderr, "ERROR: Missing arguments\n");
+        usage();
+        exit(EXIT_FAILURE);
+    }
+
+
+    N = strtol(argv[1], NULL, 10);
+    if (!N) {
+        fprintf(stderr, "ERROR: Error while parsing argument '%s'.\n Expected number.\n", argv[1]);
+        usage();
+        exit(EXIT_FAILURE);
+    }
 
     a = malloc(N * sizeof(double));
     b = malloc(N * sizeof(double));
     c = malloc(N * sizeof(double));
 
+    if (!a || !b || !c) {
+        fprintf(stderr, "ERROR: Not enough memory...\n");
+        exit(EXIT_FAILURE);
+    }
+
+    scalar = 3.0;
     #pragma omp parallel for
     for (int_t i = 0; i < N; i++) {
         a[i] = 1.0;
-        b[i] = -1.0;
-        c[i] = 0.0;
+        b[i] = 2.0;
+        c[i] = 3.0;
     }
 
-    double mem_op_bytes;
+    double gigabytes;
     double start, end;
     double copy_time, scale_time, add_time, triad_time;
 
-    start = now();
-    copy();
-    end = now();
-    copy_time = end - start;
-
-    start = now();
-    scale();
-    end = now();
-    scale_time = end - start;
-
-    start = now();
-    add();
-    end = now();
-    add_time = end - start;
-
-    start = now();
-    triad();
-    end = now();
-    triad_time = end - start;
-
-    mem_op_bytes = GIGA * N * sizeof(double);
-
+    gigabytes = GIGA * N * sizeof(double);
     printf("N=%lld\n", N);
-    printf("GB:   %6lf\n", mem_op_bytes);
+    printf("GB=%.2lf\n", gigabytes);
+    printf("threads=%d\n", omp_get_num_procs());
     printf("Copy    Scale   Add     Triad\n");
-    printf("%.2lf   ", mem_op_bytes/copy_time);
-    printf("%.2lf   ", 2*mem_op_bytes/scale_time);
-    printf("%.2lf   ", 2*mem_op_bytes/add_time);
-    printf("%.2lf   ", 3*mem_op_bytes/triad_time);
-    printf("\n");
+    for (int i = 0; i < ITERATIONS; i++) {
+        start = now();
+        copy();
+        end = now();
+        copy_time = end - start;
+
+        start = now();
+        scale();
+        end = now();
+        scale_time = end - start;
+
+        start = now();
+        add();
+        end = now();
+        add_time = end - start;
+
+        start = now();
+        triad();
+        end = now();
+        triad_time = end - start;
+
+        printf("%.2lf   ", 2*gigabytes/copy_time);
+        printf("%.2lf   ", 2*gigabytes/scale_time);
+        printf("%.2lf   ", 3*gigabytes/add_time);
+        printf("%.2lf   ", 3*gigabytes/triad_time);
+        printf("\n");
+    }
+
+    free(a);
+    free(b);
+    free(c);
 
     return 0;
 }
@@ -84,7 +114,7 @@ void copy()
 {
     #pragma omp parallel for
     for (int_t i = 0; i < N; i++) {
-        b[i] = a[i];
+        c[i] = a[i];
     }
 }
 
