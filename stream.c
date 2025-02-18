@@ -12,6 +12,7 @@ void copy();
 void scale();
 void add();
 void triad();
+void test();
 
 #define GIGA 1e-9
 #define ITERATIONS 100
@@ -63,9 +64,9 @@ int main(int argc, char **argv)
     double copy_time, scale_time, add_time, triad_time;
 
     gigabytes = GIGA * N * sizeof(double);
-    printf("N=%lld\n", N);
-    printf("GB=%.2lf\n", gigabytes);
-    printf("threads=%d\n", omp_get_num_procs());
+    printf("N               %lld\n", N);
+    printf("GB required     %.2lf\n", 3*gigabytes);
+    printf("Threads         %d\n", omp_get_num_procs());
     printf("Copy    Scale   Add     Triad\n");
     for (int i = 0; i < ITERATIONS; i++) {
         start = now();
@@ -88,10 +89,16 @@ int main(int argc, char **argv)
         end = now();
         triad_time = end - start;
 
+        start = now();
+        test();
+        end  = now();
+        double test_time = end - start;
+
         printf("%.2lf   ", 2*gigabytes/copy_time);
         printf("%.2lf   ", 2*gigabytes/scale_time);
         printf("%.2lf   ", 3*gigabytes/add_time);
         printf("%.2lf   ", 3*gigabytes/triad_time);
+        printf("%.2lf   ", 2*test_time/copy_time);
         printf("\n");
     }
 
@@ -142,3 +149,10 @@ void triad()
     }
 }
 
+void test()
+{
+    #pragma omp parallel for
+    for (int_t i = 0; i < N; i++) {
+        b[i] = c[i];
+    }
+}

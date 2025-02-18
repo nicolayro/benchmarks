@@ -16,3 +16,6 @@ clean:
 
 plot_blas:
 	.venv/bin/python plot_blas.py
+
+plot_stream:
+	.venv/bin/python plot_stream.py
