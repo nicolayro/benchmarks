@@ -1,0 +1,13 @@
+MPI startup(): Warning: I_MPI_PMI_LIBRARY will be ignored since the hydra process manager was found
+[0] 0, 0
+Iteration 0/100
+==== Results ====
+Height            4000
+Width             6000
+MPI ranks         1
+OMP threads       49
+Iterations        100
+Elapsed time (s)  4.488507
+    Collision     2.367461
+    Exchange      0.100802
+    Streaming     1.923626

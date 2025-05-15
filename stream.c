@@ -1,4 +1,3 @@
-#include <complex.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -6,20 +5,19 @@
 #include <omp.h>
 
 typedef int64_t int_t;
+typedef double real_t;
 
 double now();
 void copy();
 void scale();
 void add();
 void triad();
-void test();
-
 #define GIGA 1e-9
-#define ITERATIONS 100
+#define ITERATIONS 30
 
 int_t N;
-double *a, *b, *c;
-double scalar;
+real_t *a, *b, *c;
+real_t scalar;
 
 void usage()
 {
@@ -89,16 +87,10 @@ int main(int argc, char **argv)
         end = now();
         triad_time = end - start;
 
-        start = now();
-        test();
-        end  = now();
-        double test_time = end - start;
-
         printf("%.2lf   ", 2*gigabytes/copy_time);
         printf("%.2lf   ", 2*gigabytes/scale_time);
         printf("%.2lf   ", 3*gigabytes/add_time);
         printf("%.2lf   ", 3*gigabytes/triad_time);
-        printf("%.2lf   ", 2*test_time/copy_time);
         printf("\n");
     }
 
@@ -146,13 +138,5 @@ void triad()
     #pragma omp parallel for
     for (int_t i = 0; i < N; i++) {
         c[i] = scalar * a[i] + b[i];
-    }
-}
-
-void test()
-{
-    #pragma omp parallel for
-    for (int_t i = 0; i < N; i++) {
-        b[i] = c[i];
     }
 }

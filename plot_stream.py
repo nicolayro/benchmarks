@@ -18,8 +18,9 @@ def read_data(files):
             file.readline()
             threads = filename.split(".")[0].strip()
 
-            if not n.isdecimal() or not threads.isdecimal():
-                print(f"ERROR: Format error in file {filename}")
+            if not n.isdecimal() and not threads.isdecimal():
+                print(f"ERROR: Format error in file {filename}:")
+                print(f"       {n} or {threads} is not decimal")
                 continue
 
             for idx, line in enumerate(file):
@@ -39,6 +40,7 @@ def read_data(files):
     x = np.array(x)[order]
     y = np.array(y)[order]
     e = np.array(e)[order]
+    print(y)
 
     return x, y, e
 

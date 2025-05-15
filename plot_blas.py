@@ -41,6 +41,6 @@ ax.errorbar(x, y, e, fmt='-o', capsize=3)
 plt.xlabel('N')
 plt.ylabel('Gflops/s')
 
-plt.savefig("blas.png", dpi=300)
+plt.savefig("test.png", dpi=300)
 
 plt.show()
